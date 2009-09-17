@@ -165,7 +165,7 @@
                              anything-c-source-bookmarks
 ;                             anything-c-source-gtags-select
                              anything-c-source-fixme
-                             anything-c-source-occur
+                             anything-c-source-occur-by-moccur
                              anything-c-source-buffer-not-found
 ;                             anything-c-source-emacs-commands
 ;                             anything-c-source-refe2x
