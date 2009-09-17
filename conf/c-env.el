@@ -53,9 +53,9 @@
 (when (and run-w32 run-meadow) (load "env-meadow"))
 (when run-carbon-emacs
   (progn (load "env-carbon")
-         (load "env-carbon-personal")))
+         ))
 (when run-cocoa-emacs
   (progn (load "env-cocoa")
-         (load "env-carbon-personal")))
+         ))
 (when run-linux (load "env-linux"))
 ;;-------------------------------------------------;;
