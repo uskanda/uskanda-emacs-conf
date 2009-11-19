@@ -1,3 +1,0 @@
-;; -*- mode: emacs-lisp -*-
-;; History entries used for anything adaptive display.
-(setq anything-c-adaptive-history (quote (("Emacs Commands History" ("install-elisp" ("in" . 1) ("instal" . 1) ("insta" . 1))) ("Commands" ("install-elisp" ("install-" . 1))) ("Default" ("c-key-chord.el" ("" . 1))) (file ("/Users/kanda/Dropbox/Configurations/.emacs.d/conf/c-key-chord.el" ("c-key-" . 1))) (buffer ("answer_validations.rb" ("rb" . 1)) ("validation_template.erb" ("" . 1)) ("key-chord.el" ("key-" . 1))) ("/Users/kanda/Dropbox/Configurations/.emacs.d/provided/" ("/Users/kanda/Dropbox/Configurations/.emacs.d/provided/." ("" . 1))))))
