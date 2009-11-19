@@ -1,5 +1,0 @@
-#name : BOOST_FOREACH
-# --
-BOOST_FOREACH(${1:type} ${2:elem}, ${3:array}){
-  $0
-}

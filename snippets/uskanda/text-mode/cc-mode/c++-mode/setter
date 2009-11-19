@@ -1,3 +1,0 @@
-#name : setX ... { ... }
-# --
-void set${1:$(capitalize text)}(${2:type} ${1:$(downcase text)});

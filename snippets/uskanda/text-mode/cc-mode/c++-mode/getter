@@ -1,5 +1,0 @@
-#name : getX ... { ... }
-# --
-${1:Type} get${2:name}();
-
-

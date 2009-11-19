@@ -1,5 +1,0 @@
-#name : getX ... { ... }
-# --
-${1:type} ${2:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`}::get${3:$(capitalize text)}(){
-  return this->$3;
-}
