@@ -1,0 +1,7 @@
+conf/c-private.el
+auto-save-list/*
+vc/**/*
+sdic
+tramp
+*.elc
+

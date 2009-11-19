@@ -1,0 +1,8 @@
+#name : class ... { ... }
+# --
+class ${1:`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`}
+{
+public:
+  $1($2);
+  virtual ~$1();
+};

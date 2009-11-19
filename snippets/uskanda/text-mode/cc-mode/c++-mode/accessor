@@ -1,0 +1,4 @@
+#name : getX, setX ... { ... }
+# --
+${1:type} get${2:$(capitalize text)}();
+void set${2:$(capitalize text)}($1 ${2:name});

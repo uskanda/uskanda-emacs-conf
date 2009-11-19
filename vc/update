@@ -1,0 +1,10 @@
+#!/bin/sh
+update_el()
+{
+  ln -f ./$1/$2.el ../provided/$2.el
+}
+update_el auto-complete auto-complete
+update_el auto-complete auto-complete-config
+update_el auto-complete expander
+update_el auto-complete pulldown
+update_el rinari rinari
