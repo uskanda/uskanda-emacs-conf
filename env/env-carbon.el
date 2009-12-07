@@ -1,16 +1,16 @@
 (load "env-utf-8")
 (setenv "PATH"
-	(concat "/opt/local/bin:~/Scripts:" (getenv "PATH")))
-(setq exec-path (append '("/opt/local/bin") exec-path))
+	(concat "/opt/local/bin:~/Scripts:/Applications/pTeX.app/teTeX/bin:" (getenv "PATH")))
+(setq exec-path (append '("/opt/local/bin:/Applications/pTeX.app/teTeX/bin") exec-path))
 ;;----------------------------------------------------------------------------;;
 ;; window settings
 ;; 全画面化・ツールバー及びスクロールバー削除。
 ;;----------------------------------------------------------------------------;;
 (toggle-scroll-bar nil)
 (tool-bar-mode)
-;; (add-hook 'window-setup-hook
-;;             (lambda ()
-;;               (set-frame-parameter nil 'fullscreen 'fullboth)))
+(add-hook 'window-setup-hook
+            (lambda ()
+              (set-frame-parameter nil 'fullscreen 'fullboth)))
 (setq mac-autohide-menubar-on-maximize t)
 (set-frame-parameter nil 'alpha 100) ;透過率設定
 ;;----------------------------------------------------------------------------;;
