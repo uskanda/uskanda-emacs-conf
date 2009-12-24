@@ -85,46 +85,6 @@
 ;;----------------------------------------------------------------------------;;
 
 ;;----------------------------------------------------------------------------;;
-;; refe
-;;----------------------------------------------------------------------------;;
-;; (defun refe2x (kw)
-;;   (interactive "sReFe2x: ")
-;;   (with-current-buffer (get-buffer-create (concat "*refe2x:" kw "*"))
-;;     (when (zerop (buffer-size))
-;;       (call-process "refe2x" nil t t kw)
-;;       (diff-mode))
-;;     (setq minibuffer-scroll-window (get-buffer-window (current-buffer) t))
-;;     (goto-char (point-min))
-;;     (display-buffer (current-buffer))))
-
-;; (defun anything-c-source-static-escript (symbol desc filename &rest other-attrib)
-;;   `((name . ,desc)
-;;     (candidates . ,symbol)
-;;     ,@other-attrib
-;;     (init
-;;      . (lambda ()
-;;          (unless (and (boundp ',symbol) ,symbol)
-;;            (with-current-buffer (find-file-noselect ,filename)
-;;              (setq ,symbol (split-string (buffer-string) "\n" t))))))
-;;     (action
-;;      ("Eval it"
-;;       . (lambda (cand)
-;;           (with-temp-buffer
-;;             (insert cand)
-;;             (cd ,(file-name-directory filename))
-;;             (backward-sexp 1)
-;;             (eval (read (current-buffer)))))))))
-
-;; (setq anything-c-source-refe2x
-;;       (anything-c-source-static-escript
-;;        'anything-c-refe2x-candidates "ReFe2x"
-;;        "~/bin/ruby-refm-1.9.0-dynamic/bitclust/refe2x.e"
-;;        '(delayed)
-;;        '(requires-pattern . 3)))
-;;----------------------------------------------------------------------------;;
-
-
-;;----------------------------------------------------------------------------;;
 ;; anythingでgrep(応用例としてTODO/FIXME検索)
 ;;----------------------------------------------------------------------------;;
 (defmacro define-anything-grep (var name regexp condition &optional subexp recenter)
@@ -159,6 +119,9 @@
 (require 'anything-project)
 (global-set-key "\M-p" 'anything-project)
 
+(require 'anything-rurima)
+(setq anything-rurima-index-file "~/.emacs.d/vc/rurima/rubydoc/rurima.e")
+
 ;;----------------------------------------------------------------------------;;
 ;; デフォルトのsourcesを決める
 ;;----------------------------------------------------------------------------;;
@@ -167,6 +130,7 @@
                              anything-c-source-recentf
 ;                             anything-c-source-gtags-select
                              anything-c-source-fixme
+                             anything-c-source-rurima
 ;                             anything-c-source-occur-by-moccur
                              anything-c-source-buffer-not-found
 ;                             anything-c-source-emacs-commands

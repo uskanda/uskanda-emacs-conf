@@ -6,7 +6,7 @@
 (add-to-load-path "~/.emacs.d/site-lisp" "~/.emacs.d/conf" "~/.emacs.d/lisp" "~/.emacs.d/env")
 
 (require 'install-elisp)
-(setq install-elisp-repository-directory "~/.emacs.d/provided")
+(setq install-elisp-repository-directory "~/.emacs.d/site-lisp")
 
 ;;設定ファイルを読み込む
 ;;外したい設定は該当する行をコメントアウトすればよい
