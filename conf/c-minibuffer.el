@@ -2,7 +2,6 @@
 ;; マイナーモード表示の省略
 ;;----------------------------------------------------------------------------;;
 (require 'diminish)
-(diminish 'outputz-mode)
 (diminish 'font-lock-mode)
 (diminish 'abbrev-mode)
 ;; scratch バッファの Lisp Interaction も長い

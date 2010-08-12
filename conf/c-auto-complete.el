@@ -1,12 +1,12 @@
 (require 'auto-complete)
 
 (global-auto-complete-mode t)
-;(setq ac-auto-start 2)
+(setq ac-auto-start 2)
 (setq ac-limit 10)
 (when (boundp 'ac-modes)
   (setq ac-modes
     (append ac-modes
-      (list 'yatex-mode 'rhtml-mode 'css-mode 'html-mode 'haml-mode 'sass-mode))))
+      (list 'yatex-mode 'rhtml-mode 'css-mode 'html-mode 'haml-mode 'sass-mode 'fundamental-mode))))
 
 (set-default 'ac-sources '(ac-source-filename
                    ac-source-yasnippet
