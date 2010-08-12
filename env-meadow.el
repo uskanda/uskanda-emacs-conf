@@ -6,8 +6,8 @@
 
 ;;; 日本語環境設定
 (set-language-environment "Japanese")
-(require 'un-define)
-(require 'jisx0213)
+;; (require 'un-define)
+;; (require 'jisx0213)
 
 ;;; IMEの設定
 (mw32-ime-initialize)

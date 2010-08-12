@@ -5,8 +5,10 @@
         (mapcar 'expand-file-name paths)))
 (add-to-load-path "~/.emacs.d/site-lisp" "~/.emacs.d/conf" "~/.emacs.d/lisp" "~/.emacs.d/")
 
-(require 'install-elisp)
-(setq install-elisp-repository-directory "~/.emacs.d/site-lisp")
+(require 'auto-install)
+(auto-install-compatibility-setup)
+(setq auto-install-directory "~/.emacs.d/site-lisp")
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;;設定ファイルを読み込む
 ;;外したい設定は該当する行をコメントアウトすればよい
