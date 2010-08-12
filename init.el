@@ -21,7 +21,6 @@
         autosave       ;;バッファに変更があれば即座にセーブする
 ;        ecb            ;;Emacsを統合開発環境っぽくする
         line-highlight ;;現在行/列をハイライトする
-        outputz        ;;Outputzに文字数を送る
         macro          ;;動的マクロを含むマクロ設定
         yatex          ;;YaTeXを使う
         shell          ;;Emacs上でのシェル利用の設定
