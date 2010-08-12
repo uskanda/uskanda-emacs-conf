@@ -3,7 +3,7 @@
   (mapc '(lambda (path)
            (add-to-list 'load-path path))
         (mapcar 'expand-file-name paths)))
-(add-to-load-path "~/.emacs.d/site-lisp" "~/.emacs.d/conf" "~/.emacs.d/lisp" "~/.emacs.d/env")
+(add-to-load-path "~/.emacs.d/site-lisp" "~/.emacs.d/conf" "~/.emacs.d/lisp" "~/.emacs.d/")
 
 (require 'install-elisp)
 (setq install-elisp-repository-directory "~/.emacs.d/site-lisp")
