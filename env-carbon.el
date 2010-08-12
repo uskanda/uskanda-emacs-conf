@@ -30,7 +30,7 @@
 (require 'carbon-font)
 ;(fixed-width-set-fontset "Hiram's" 12)
 ;(fixed-width-set-fontset "hirakaku_w3" 20)
-(fixed-width-set-fontset "hirakaku_w3" 10)
+(fixed-width-set-fontset "hirakaku_w3" 12)
 ;(fixed-width-set-default-fontset "fontset-hiraginokaku2")
 ;;----------------------------------------------------------------------------;;
 

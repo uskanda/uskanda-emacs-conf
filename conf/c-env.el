@@ -49,7 +49,6 @@
 ;;-------------------------------------------------;;
 ;; 各実行環境依存の設定を読み込む
 ;;-------------------------------------------------;;
-(add-to-load-path "~/.emacs.d/env")
 (when (and run-w32 run-meadow) (load "env-meadow"))
 (when run-carbon-emacs
   (progn (load "env-carbon")
