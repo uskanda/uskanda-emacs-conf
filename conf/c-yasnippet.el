@@ -11,7 +11,7 @@
 (setq yas/root-directories
   '("~/.emacs.d/snippets/uskanda"
    "~/.emacs.d/snippets/builtin"
-   "~/.emacs.d/snippets/imported"))
+   ))
 (require 'dropdown-list)
 (setq yas/prompt-functions '(yas/dropdown-prompt
                              yas/completing-prompt))
