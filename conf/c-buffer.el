@@ -212,3 +212,14 @@
 (global-linum-mode t)
 (setq linum-format "%4d")
 ;;----------------------------------------------------------------------------;;
+
+
+;;----------------------------------------------------------------------------;;
+;; popwin settings
+;; dependencies: anything.el
+;;----------------------------------------------------------------------------;;
+(require 'popwin)
+(setq display-buffer-function 'popwin:display-buffer)
+(setq anything-samewindow nil)
+(push '("*anything*" :height 20) popwin:special-display-config)
+;;----------------------------------------------------------------------------;;

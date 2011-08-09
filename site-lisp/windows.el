@@ -1,8 +1,8 @@
 ;;; -*- Emacs-Lisp -*-
 ;;; Window manager for GNU Emacs.
-;;; $Id: windows.el,v 2.44 2008/06/08 21:55:54 yuuji Exp $
-;;; (c) 1993-2008 by HIROSE Yuuji [yuuji@gentei.org]
-;;; Last modified Mon Jun  9 06:48:44 2008 on firestorm
+;;; $Id: windows.el,v 2.48 2010/05/23 12:33:40 yuuji Exp $
+;;; (c) 1993-2010 by HIROSE Yuuji [yuuji@gentei.org]
+;;; Last modified Sun May 23 21:27:31 2010 on firestorm
 
 ;;;		Window manager for GNU Emacs
 ;;;
@@ -1060,9 +1060,7 @@ Optional third arg NOSETWC non-nil means do not set-window-configuration TO.
     (or nosetwc (win:set-wc to))
     (if win:buffer-depth-per-win
 	(save-window-excursion (win:restore-buffer-list to)))
-    (and (null window-system)
-	 (fboundp 'make-frame)
-	 (string< "20" emacs-version)
+    (and win:frames-in-nw
 	 (null (aref win:configs to))
 	 (select-frame
 	  (make-frame (list (cons 'name (format "W:%d" to))))))))
@@ -1111,7 +1109,7 @@ If calling from program, optional second argument WINDOW can specify
 the window number."
   (interactive "p")
   (let*((window (or window
-                    (if (< last-command-char 0)
+                    (if (and (> ?\M-0 0) (<= ?\M-0 last-command-char))
                         (- last-command-char ?\M-0)
                       (- last-command-char win:base-key))))
 	(wc (aref win:configs window)))
@@ -1344,8 +1342,7 @@ Using from program, non-interactively, don't forget to specify second arg."
 (defun win-toggle-window ()
   "Toggle current window and most recently used one."
   (interactive)
-  (if win:use-frame
-      (win:adjust-window))
+  (win:adjust-window)
   (if (or (= win:last-config win:current-config)
 	  (equal (aref win:configs win:last-config) nil))
       (message "No other window")
@@ -1436,6 +1433,13 @@ If Windows uses frame(Emacs 19), Select the NUM-th window frame."
     (if (marker-buffer (cdr wc))
 	(progn (goto-char (cdr wc))
 	       (set-marker (cdr wc) nil)))))
+
+(defun win:get-frame (index)
+  "(windows internal) Get INDEX-th wnidows frame object"
+  (let ((obj (aref win:configs index)))
+    (if win:frames-in-nw
+	(if obj (window-configuration-frame (car-safe obj)) (selected-frame))
+      obj)))
 
 (defun win:set-window-name (index)
   "(Windows low level intenal)Set current window name to INDEX-th of array."
@@ -1562,7 +1566,7 @@ Do not call this function."
 ;; Functions for resume.
 ;;;
 (defconst win:revision
-  "$Revision: 2.44 $"
+  "$Revision: 2.48 $"
   "Revision string of windows.el")
 (defvar win:revision-prefix ";win;")
 
@@ -1739,8 +1743,8 @@ Configuration to be saved is a list of
 		    (+ (win:numericify (cdr y)) win:resumed-frame-offset-y)))
 	(if win:xemacs-p		;XEmacs is unwilling to set minibuffer
 	    (setq params (delq (assq 'minibuffer params) params)))
-	(modify-frame-parameters frame params)
-	))
+	(modify-frame-parameters frame params))
+    (win:switch-window (car config) t t))
   (if (nth 3 config) (aset win:names-prefix (car config) (nth 3 config)))
   (restore-window-configuration (car (cdr config))))
 
@@ -1822,6 +1826,7 @@ Non-nil for optional argument PRESERVE keeps all current buffers."
 	(while (not (frame-visible-p goal)) (sit-for 0))
 	(raise-frame goal)
 	(select-frame goal)
+	(if (fboundp 'x-focus-frame) (x-focus-frame goal))
 	(if (not (eq (selected-frame) goal))
 	    nil
 	  (or win:xemacs-p (unfocus-frame))
@@ -1837,20 +1842,26 @@ Non-nil for optional argument PRESERVE keeps all current buffers."
   "Return the window number if selected-frame is a member of window list."
   (let ((i 1) (sf (selected-frame)) found)
     (while (and (< i win:max-configs) (not found))
-      (if (eq sf (aref win:configs i))
+      (if (eq sf (win:get-frame i))
 	  (setq found t))
       (setq i (1+ i)))
     (if found (1- i))))
 
+(defconst win:frames-in-nw
+  (and (null window-system)
+       (fboundp 'window-configuration-frame) ;not in XEmacs
+       (fboundp 'make-frame)
+       (string< "20" emacs-version))
+  "Flags whether using frame feature in -nw mode or not.")
 (defun win:adjust-window (&optional noerror)
   "Adjust win:current-config to (selected-frame).
 If optional argument NOERROR is non-nil, do not stop even if the selected
 window is not a member of window list."
   (interactive)
   (cond
-   (win:use-frame
+   ((or win:use-frame win:frames-in-nw)
     (catch 'escape
-      (if (eq (aref win:configs win:current-config) (selected-frame))
+      (if (eq (win:get-frame win:current-config) (selected-frame))
 	  nil				;selected frame is current window.
 	(let ((sw (win:selected-window)))
 	  (if (not sw)
@@ -1861,7 +1872,8 @@ window is not a member of window list."
 		  win:current-config sw)
 	    (win:update-mode-line win:current-config))))
       (if (and win:title-with-buffer-name (not win:xemacs-p)
-	       win:frame-title-function)
+	       win:frame-title-function
+	       (not win:frames-in-nw))
 	  (modify-frame-parameters
 	   nil
 	   (list
@@ -2281,6 +2293,22 @@ If interactive argument KILL is non-nil, kill menu buffer and no select."
 (run-hooks 'win-load-hook)
 
 ;; $Log: windows.el,v $
+;; Revision 2.48  2010/05/23 12:33:40  yuuji
+;; Workaround for frame focus on CarbonEmacs.
+;; Thanks to nabechan.
+;;
+;; Revision 2.47  2009/10/17 01:49:05  yuuji
+;; Fix for XEmacs and emacs-20.
+;;
+;; Revision 2.46  2009/09/02 05:09:33  yuuji
+;; ?\M-0 is no longer negative.
+;; Thanks to patch from rubikitch>at<ruby-lang.org.
+;;
+;; Revision 2.45  2009/09/02 04:48:06  yuuji
+;; Frame use in -nw mode fixed.
+;; In -nw mode, we should adjust window number after switching windows.
+;; Thanks to the comment from Francis Moreau.
+;;
 ;; Revision 2.44  2008/06/08 21:55:54  yuuji
 ;; In non-frame mode, displaying different point of the same buffer
 ;; in two or more window can't be restored by set-window-configuration.

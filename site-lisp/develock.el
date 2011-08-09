@@ -1,13 +1,13 @@
 ;;; develock.el --- additional font-lock keywords for the developers
 
-;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008 Katsumi Yamaoka
+;; Copyright (C) 2001, 2002, 2003, 2005, 2006, 2007, 2008, 2009 Katsumi Yamaoka
 
 ;; Author: Katsumi Yamaoka  <yamaoka@jpl.org>
 ;;         Jun'ichi Shiono  <jun@fsas.fujitsu.com>
 ;;         Yasutaka SHINDOH <ring-pub@fan.gr.jp>
 ;;         Oscar Bonilla    <ob@bitmover.com>
 ;; Created: 2001/06/28
-;; Revised: 2008/04/08
+;; Revised: 2009/08/18
 ;; Keywords: font-lock emacs-lisp change-log texinfo c java perl html
 ;;           tcl ruby mail news
 
@@ -44,7 +44,7 @@
 ;;       (add-hook 'mail-setup-hook 'turn-on-font-lock))
 ;;      ((>= emacs-major-version 20)
 ;;       (require 'develock)
-;;       (global-font-lock-mode t)))
+;;       (global-font-lock-mode 1)))
 ;;
 ;; Alternatively, you can use the following to enable font-lock for
 ;; each mode individually in Emacs.
@@ -213,7 +213,7 @@
 
 ;;; Code:
 
-(defconst develock-version "0.36"
+(defconst develock-version "0.39"
   "Version number for this version of Develock.")
 
 (require 'advice)
@@ -283,7 +283,6 @@ minor mode strings as shown below:
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-whitespace-face-1 'face-alias 'develock-whitespace-1)
 
 (defface develock-whitespace-2
   '((t (:background "Orange")))
@@ -291,7 +290,6 @@ minor mode strings as shown below:
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-whitespace-face-2 'face-alias 'develock-whitespace-2)
 
 (defface develock-whitespace-3
   '((t (:background "Yellow")))
@@ -299,7 +297,6 @@ minor mode strings as shown below:
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-whitespace-face-3 'face-alias 'develock-whitespace-3)
 
 (defface develock-long-line-1
   '((((background dark))
@@ -310,7 +307,6 @@ minor mode strings as shown below:
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-long-line-face-1 'face-alias 'develock-long-line-1)
 
 (defface develock-long-line-2
   '((t (:foreground "Red" :background "Yellow")))
@@ -318,7 +314,6 @@ minor mode strings as shown below:
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-long-line-2-face 'face-alias 'develock-long-line-2)
 
 (defface develock-lonely-parentheses
   '((t (:foreground "Blue" :background "PaleTurquoise")))
@@ -326,8 +321,6 @@ minor mode strings as shown below:
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-lonely-parentheses-face
-     'face-alias 'develock-lonely-parentheses)
 
 (defface develock-bad-manner
   '((((background dark))
@@ -339,7 +332,6 @@ Those might violate the manners of mail messages or news articles."
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-bad-manner-face 'face-alias 'develock-bad-manner)
 
 (defface develock-upper-case-tag
   '((((background dark))
@@ -350,7 +342,6 @@ Those might violate the manners of mail messages or news articles."
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-upper-case-tag-face 'face-alias 'develock-upper-case-tag)
 
 (defface develock-upper-case-attribute
   '((((background dark))
@@ -361,8 +352,6 @@ Those might violate the manners of mail messages or news articles."
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-upper-case-attribute-face
-     'face-alias 'develock-upper-case-attribute)
 
 (defface develock-reachable-mail-address
   '((t (:foreground "DarkGreen" :background "LemonChiffon")))
@@ -371,8 +360,16 @@ That would be defenseless to spammers."
   :group 'develock
   :group 'font-lock-highlighting-faces
   :group 'font-lock-faces)
-(put 'develock-reachable-mail-address-face
-     'face-alias 'develock-reachable-mail-address)
+
+(defface develock-attention
+  '((((background dark))
+     (:foreground "OrangeRed" :bold t))
+    (t
+     (:foreground "Red" :bold t)))
+  "Develock face used to highlight things to be paid attention."
+  :group 'develock
+  :group 'font-lock-highlighting-faces
+  :group 'font-lock-faces)
 
 (defcustom develock-auto-enable t
   "If non-nil, turn Develock mode on when font-lock is turned on."
@@ -445,29 +442,16 @@ the value nil."
   "Alist of `major-mode's and the values for `fill-column'.
 When Develock is turned on, `auto-fill-mode' is automatically enabled
 in the buffer where `major-mode' included in this list runs.
-Each value is applied to `fill-column' in the buffer.  If `fill-column'
-is specified as a local variable and is allowed in the buffer, this
-variable will be made buffer-local and the value will be modified."
+Each value is applied to `fill-column' in the buffer overriding the
+one in the directory-local variables specified in the .dir-locals.el
+file (if any).  If `fill-column' is specified as a local variable and
+is allowed in the buffer, this variable will be made buffer-local and
+the value will be modified."
   :type '(repeat (cons :format "%v"
 		       (symbol :tag "Major mode")
 		       (integer :tag "Fill column")))
   :group 'develock
   :group 'font-lock)
-
-(defadvice hack-local-variables (around develock-allow-local-variables
-					activate)
-  "Advised by Develock.
-Merge local veriables into `develock-fill-column-alist'."
-  (let ((fc fill-column))
-    ad-do-it
-    (if (and (assq major-mode develock-fill-column-alist)
-	     (not (eq fc fill-column)))
-	(progn
-	  (set (make-local-variable 'develock-fill-column-alist)
-	       (copy-sequence develock-fill-column-alist))
-	  (let ((elem (memq (assq major-mode develock-fill-column-alist)
-			    develock-fill-column-alist)))
-	    (setcar elem (cons major-mode fill-column)))))))
 
 (defcustom develock-mode-ignore-kinsoku-list
   '(emacs-lisp-mode lisp-interaction-mode c-mode c++-mode java-mode jde-mode
@@ -837,7 +821,10 @@ Each element should be triple symbols of the following form:
      1 'develock-whitespace-2)
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the Lisp modes."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -919,7 +906,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; tabs
     ("\t+"
-     (0 'develock-whitespace-1 append)))
+     (0 'develock-whitespace-1 append))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the TeXinfo mode."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -950,7 +940,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the C modes."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -981,7 +974,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the Java mode."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -1050,7 +1046,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the CPerl mode."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -1081,7 +1080,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the Perl mode."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -1143,7 +1145,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the Tcl mode."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -1174,7 +1179,10 @@ Each element should be triple symbols of the following form:
      (0 'develock-whitespace-2 append))
     ;; reachable E-mail addresses
     ("<?[-+.0-9A-Z_a-z]+@[-0-9A-Z_a-z]+\\(\\.[-0-9A-Z_a-z]+\\)+>?"
-     (0 'develock-reachable-mail-address t)))
+     (0 'develock-reachable-mail-address t))
+    ;; things to be paid attention
+    ("\\<\\(?:[Ff][Ii][Xx][Mm][Ee]\\|[Tt][Oo][Dd][Oo]\\)\\(?::\\|\\>\\)"
+     (0 'develock-attention t)))
   "Extraordinary level highlighting for the Ruby mode."
   :type develock-keywords-custom-type
   :set 'develock-keywords-custom-set
@@ -1220,6 +1228,53 @@ Users should never modify the value.")
   "Internal variable used to save `fill-column' and `auto-fill-mode'.
 It becomes buffer-local in the buffer in which Develock is on, and
 keeps the values as a cons cell before Develock is turned on.")
+
+(if (boundp 'file-local-variables-alist)
+    ;; Emacs 23
+    (progn
+      (defadvice hack-dir-local-variables (after
+					   hack-file-local-variables-alist
+					   activate)
+	"Advised by Develock.
+Remove `fill-column' element from `file-local-variables-alist' if
+`develock-fill-column-alist' specifies it."
+	(and develock-mode
+	     (cdr (assq major-mode develock-fill-column-alist))
+	     (setq file-local-variables-alist
+		   (delq (assq 'fill-column file-local-variables-alist)
+			 file-local-variables-alist))))
+      (defadvice hack-local-variables (after hack-file-local-variables-alist
+					     activate)
+	"Advised by Develock.
+Merge `fill-column' local variable into `develock-fill-column-alist'."
+	(let (old new)
+	  (and develock-mode
+	       (setq old (assq major-mode develock-fill-column-alist))
+	       (setq new (assq 'fill-column file-local-variables-alist))
+	       (not (eq (cdr old) (cdr new)))
+	       (progn
+		 (set (make-local-variable 'develock-fill-column-alist)
+		      (copy-sequence develock-fill-column-alist))
+		 (setcar (memq (assq major-mode develock-fill-column-alist)
+			       develock-fill-column-alist)
+			 (cons major-mode (cdr new)))
+		 (setcar develock-original-fill-configuration (cdr new)))))))
+  ;; Emacs 22 or earlier
+  (defadvice hack-local-variables (around develock-allow-local-variables
+					  activate)
+    "Advised by Develock.
+Merge `fill-column' local variable into `develock-fill-column-alist'."
+    (let ((fc fill-column))
+      ad-do-it
+      (if (and (assq major-mode develock-fill-column-alist)
+	       (not (eq fc fill-column)))
+	  (progn
+	    (set (make-local-variable 'develock-fill-column-alist)
+		 (copy-sequence develock-fill-column-alist))
+	    (setcar (memq (assq major-mode develock-fill-column-alist)
+			  develock-fill-column-alist)
+		    (cons major-mode fill-column))
+	    (setcar develock-original-fill-configuration fill-column))))))
 
 (let (current-load-list)
   (eval
